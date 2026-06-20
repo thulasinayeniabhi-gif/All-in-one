@@ -1,0 +1,1 @@
+"""Tools package for All-in-One collection"""
