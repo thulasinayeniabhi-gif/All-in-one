@@ -1,32 +1,43 @@
 #!/bin/bash
 
-# All-in-One Tool Installation Script for Termux
+# ABHINAV - All-in-One Premium Tool Collection Installer
+# Automated setup for Termux and Linux environments
 
-echo "[+] Installing All-in-One Tool Collection..."
+echo "╔════════════════════════════════════════════════════════════╗"
+echo "║                  ABHINAV PREMIUM EDITION                   ║"
+echo "║            All-in-One Tool Collection Installer             ║"
+echo "╚════════════════════════════════════════════════════════════╝"
+
 echo ""
+echo "[*] Detecting system environment..."
 
-# Update packages
+if [[ -d "$PREFIX" ]]; then
+    echo "[✓] Termux environment detected"
+    INSTALL_CMD="apt install"
+else
+    echo "[✓] Linux environment detected"
+    INSTALL_CMD="apt-get install"
+fi
+
+echo ""
 echo "[*] Updating package manager..."
-apt-get update -y
-apt-get upgrade -y
+$INSTALL_CMD update -y
 
-# Install Python3 and pip
-echo "[*] Installing Python3 and pip..."
-apt-get install -y python3 python3-pip
+echo ""
+echo "[*] Installing Python and dependencies..."
+$INSTALL_CMD install python3 python3-pip git -y
 
-# Install git
-echo "[*] Installing git..."
-apt-get install -y git
-
-# Install additional dependencies
-echo "[*] Installing system dependencies..."
-apt-get install -y libffi-dev libssl-dev python3-dev
-
-# Install Python requirements
-echo "[*] Installing Python requirements..."
+echo ""
+echo "[*] Installing Python packages..."
 pip install -r requirements.txt
 
 echo ""
-echo "[+] Installation complete!"
-echo "[*] To run the tool, execute: python3 main.py"
+echo "[✓] Installation completed successfully!"
 echo ""
+echo "[*] To start ABHINAV, run:"
+echo "    python3 main.py"
+echo ""
+echo "[*] Default password: abhi"
+echo "[*] Features: 20 Premium Tools"
+echo ""
+echo "[✓] Setup complete! Enjoy ABHINAV Premium Edition"
