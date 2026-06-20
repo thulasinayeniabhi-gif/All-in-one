@@ -2,46 +2,56 @@
 # -*- coding: utf-8 -*-
 """
 ABHINAV - All-in-One Tool Collection for Termux
-Premium Edition with Authentication
+Premium Edition - Complete & Perfect Implementation
 Author: thulasinayeniabhi-gif
+Version: 1.0 FINAL
 """
 
 import os
 import sys
 import platform
 import time
+import json
+import traceback
 from colorama import Fore, Back, Style, init
 
 # Initialize colorama
 init(autoreset=True)
 
-from tools.main_options import main_options_menu
-from tools.grabber_options import grabber_options_menu
-from tools.token_options import token_options_menu
-from tools.useful_options import useful_options_menu
+try:
+    from tools.main_options import main_options_menu
+    from tools.grabber_options import grabber_options_menu
+    from tools.token_options import token_options_menu
+    from tools.useful_options import useful_options_menu
+except ImportError as e:
+    print(f"{Fore.RED}[!] Error importing modules: {str(e)}{Style.RESET_ALL}")
+    print(f"{Fore.YELLOW}[*] Please install requirements: pip install -r requirements.txt{Style.RESET_ALL}")
+    sys.exit(1)
 
 def clear_screen():
-    """Clear terminal screen"""
-    os.system('clear' if platform.system() != 'Windows' else 'cls')
+    """Clear terminal screen - cross-platform compatible"""
+    try:
+        os.system('clear' if platform.system() != 'Windows' else 'cls')
+    except Exception as e:
+        print(f"{Fore.RED}[!] Error clearing screen: {str(e)}{Style.RESET_ALL}")
 
 def print_login_banner():
-    """Print login banner"""
+    """Print login banner with ABHINAV branding"""
     banner = f"""
 {Fore.MAGENTA}
 ╔══════════════════════════════════════════════════════════════╗
 ║                                                              ║
-║           {Fore.YELLOW}████████╗ ███████╗ ████████╗ ███████╗           {Fore.MAGENTA}║
-║           {Fore.YELLOW}╚══██╔══╝ ██╔════╝ ╚══██╔══╝ ██╔════╝           {Fore.MAGENTA}║
-║              {Fore.YELLOW}██║    █████╗      ██║    █████╗             {Fore.MAGENTA}║
-║              {Fore.YELLOW}██║    ██╔══╝      ██║    ██╔══╝             {Fore.MAGENTA}║
-║              {Fore.YELLOW}██║    ███████╗    ██║    ███████╗           {Fore.MAGENTA}║
-║              {Fore.YELLOW}╚═╝    ╚══════╝    ╚═╝    ╚══════╝           {Fore.MAGENTA}║
+║           {Fore.YELLOW}█████████████ █████ ███████ █████████{Fore.MAGENTA}            ║
+║           {Fore.YELLOW}█        █    █     █      █ █{Fore.MAGENTA}              ║
+║              {Fore.YELLOW}█    █████████      █    █████████{Fore.MAGENTA}             ║
+║              {Fore.YELLOW}█    █     █      █    █{Fore.MAGENTA}                ║
+║              {Fore.YELLOW}█    █     █    █████ █████████{Fore.MAGENTA}             ║
 ║                                                              ║
-║        {Fore.CYAN}═══════════════════════════════════════{Fore.MAGENTA}        ║
-║                  {Fore.GREEN}ABHINAV PREMIUM EDITION{Fore.MAGENTA}                   ║
-║        {Fore.CYAN}═══════════════════════════════════════{Fore.MAGENTA}        ║
+║        {Fore.CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Fore.MAGENTA}        ║
+║                  {Fore.GREEN}ABHINAV PREMIUM EDITION{Fore.MAGENTA}                  ║
+║        {Fore.CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Fore.MAGENTA}        ║
 ║                                                              ║
-║        {Fore.YELLOW}All-in-One Tool Collection for Termux{Fore.MAGENTA}          ║
+║        {Fore.YELLOW}All-in-One Tool Collection for Termux{Fore.MAGENTA}         ║
 ║              {Fore.YELLOW}20 Premium Tools Included{Fore.MAGENTA}                 ║
 ║                                                              ║
 ╚══════════════════════════════════════════════════════════════╝
@@ -50,7 +60,7 @@ def print_login_banner():
     print(banner)
 
 def authenticate():
-    """Authentication system with password"""
+    """Authentication system with password protection"""
     clear_screen()
     print_login_banner()
     
@@ -59,17 +69,25 @@ def authenticate():
     attempts = 0
     
     while attempts < max_attempts:
-        password = input(f"{Fore.YELLOW}[*] Enter Password: {Style.RESET_ALL}")
-        
-        if password == correct_password:
-            print(f"{Fore.GREEN}[✓] Authentication Successful!{Style.RESET_ALL}")
-            time.sleep(1)
-            return True
-        else:
+        try:
+            password = input(f"{Fore.YELLOW}[*] Enter Password: {Style.RESET_ALL}")
+            
+            if password == correct_password:
+                print(f"{Fore.GREEN}[✓] Authentication Successful!{Style.RESET_ALL}")
+                time.sleep(1)
+                return True
+            else:
+                attempts += 1
+                remaining = max_attempts - attempts
+                if remaining > 0:
+                    print(f"{Fore.RED}[!] Invalid Password! {remaining} attempts remaining.{Style.RESET_ALL}")
+                time.sleep(1)
+        except KeyboardInterrupt:
+            print(f"\n{Fore.RED}[!] Authentication cancelled.{Style.RESET_ALL}")
+            return False
+        except Exception as e:
+            print(f"{Fore.RED}[!] Error during authentication: {str(e)}{Style.RESET_ALL}")
             attempts += 1
-            remaining = max_attempts - attempts
-            print(f"{Fore.RED}[!] Invalid Password! {remaining} attempts remaining.{Style.RESET_ALL}")
-            time.sleep(1)
     
     print(f"{Fore.RED}[!] Authentication Failed! Maximum attempts exceeded.{Style.RESET_ALL}")
     time.sleep(2)
@@ -78,25 +96,24 @@ def authenticate():
 def print_banner():
     """Print welcome banner with ABHINAV branding"""
     banner = f"""
-{Fore.CYAN}╔════════════════════════════════════════════════════════════╗
-║                                                            ║
-║          {Fore.YELLOW}█████╗ ██████╗ ██╗  ██╗██╗███╗   ██╗ █████╗ ██╗   ██╗{Fore.CYAN}║
-║          {Fore.YELLOW}██╔══██╗██╔══██╗██║  ██║██║████╗  ██║██╔══██╗██║   ██║{Fore.CYAN}║
-║          {Fore.YELLOW}███████║██████╔╝███████║██║██╔██╗ ██║███████║██║   ██║{Fore.CYAN}║
-║          {Fore.YELLOW}██╔══██║██╔══██╗██╔══██║██║██║╚██╗██║██╔══██║╚██╗ ██╔╝{Fore.CYAN}║
-║          {Fore.YELLOW}██║  ██║██████╔╝██║  ██║██║██║ ╚████║██║  ██║ ╚████╔╝{Fore.CYAN}║
-║          {Fore.YELLOW}╚═╝  ╚═╝╚═════╝ ╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝  ╚═══╝{Fore.CYAN}║
-║                                                            ║
-║      {Fore.GREEN}Premium All-in-One Tool Collection v1.0{Fore.CYAN}             ║
+{Fore.CYAN}╔════════════════════════════════════════════════════════════════╗
+║                                                                ║
+║          {Fore.YELLOW}█████████████ █████ ███████ █████████{Fore.CYAN}              ║
+║          {Fore.YELLOW}█        █    █     █      █ █{Fore.CYAN}                  ║
+║             {Fore.YELLOW}█    █████████      █    █████████{Fore.CYAN}             ║
+║             {Fore.YELLOW}█    █     █      █    █{Fore.CYAN}                    ║
+║             {Fore.YELLOW}█    █     █    █████ █████████{Fore.CYAN}             ║
+║                                                                ║
+║      {Fore.GREEN}Premium All-in-One Tool Collection v1.0{Fore.CYAN}           ║
 ║         {Fore.GREEN}Termux & Linux Compatible Toolkit{Fore.CYAN}              ║
-║                                                            ║
-╚════════════════════════════════════════════════════════════╝
+║                                                                ║
+╚════════════════════════════════════════════════════════════════╝
 {Style.RESET_ALL}
     """
     print(banner)
 
 def print_main_menu():
-    """Display main menu"""
+    """Display comprehensive main menu"""
     menu = f"""
 {Fore.GREEN}[+] MAIN OPTIONS:{Style.RESET_ALL}
     {Fore.YELLOW}[01]{Style.RESET_ALL} Self Bot          {Fore.YELLOW}[02]{Style.RESET_ALL} RAT Tool
@@ -121,27 +138,15 @@ def print_main_menu():
     """
     print(menu)
 
-def main():
-    """Main application loop"""
-    # Authenticate user first
-    if not authenticate():
-        sys.exit(1)
-    
-    while True:
-        clear_screen()
-        print_banner()
-        print_main_menu()
-        
-        choice = input(f"{Fore.YELLOW}[*] Select Option: {Style.RESET_ALL}").strip()
-        
-        if choice == '00':
-            print(f"{Fore.RED}[!] Exiting ABHINAV... Goodbye!{Style.RESET_ALL}")
-            sys.exit(0)
-        elif choice == '*':
-            print(f"{Fore.YELLOW}[!] Logging out from ABHINAV...{Style.RESET_ALL}")
-            time.sleep(1)
-            return  # Return to authentication
-        elif choice in ['01', '02', '03', '04', '05']:
+def validate_option(choice):
+    """Validate user option input"""
+    valid_options = ['00', '*'] + [f"{i:02d}" for i in range(1, 21)]
+    return choice.strip() in valid_options
+
+def route_option(choice):
+    """Route option to appropriate menu handler"""
+    try:
+        if choice in ['01', '02', '03', '04', '05']:
             main_options_menu(choice)
         elif choice in ['06', '07', '08']:
             grabber_options_menu(choice)
@@ -152,8 +157,50 @@ def main():
         else:
             print(f"{Fore.RED}[!] Invalid option! Please try again.{Style.RESET_ALL}")
             input(f"{Fore.YELLOW}[*] Press Enter to continue...{Style.RESET_ALL}")
+    except Exception as e:
+        print(f"{Fore.RED}[!] Error executing tool: {str(e)}{Style.RESET_ALL}")
+        print(f"{Fore.YELLOW}[*] Stack trace: {traceback.format_exc()}{Style.RESET_ALL}")
+        input(f"{Fore.YELLOW}[*] Press Enter to continue...{Style.RESET_ALL}")
 
-if __name__ == "__main__":
+def main():
+    """Main application loop"""
+    # Authenticate user first
+    if not authenticate():
+        sys.exit(1)
+    
+    while True:
+        try:
+            clear_screen()
+            print_banner()
+            print_main_menu()
+            
+            choice = input(f"{Fore.YELLOW}[*] Select Option: {Style.RESET_ALL}").strip()
+            
+            if not validate_option(choice):
+                print(f"{Fore.RED}[!] Invalid option! Please select 00-20 or *.{Style.RESET_ALL}")
+                input(f"{Fore.YELLOW}[*] Press Enter to continue...{Style.RESET_ALL}")
+                continue
+            
+            if choice == '00':
+                print(f"{Fore.RED}[!] Exiting ABHINAV... Goodbye!{Style.RESET_ALL}")
+                time.sleep(1)
+                sys.exit(0)
+            elif choice == '*':
+                print(f"{Fore.YELLOW}[!] Logging out from ABHINAV...{Style.RESET_ALL}")
+                time.sleep(1)
+                return  # Return to authentication
+            else:
+                route_option(choice)
+        
+        except KeyboardInterrupt:
+            print(f"\n{Fore.YELLOW}[!] Menu interrupted. Returning to main menu...{Style.RESET_ALL}")
+            time.sleep(1)
+        except Exception as e:
+            print(f"{Fore.RED}[!] Unexpected error: {str(e)}{Style.RESET_ALL}")
+            input(f"{Fore.YELLOW}[*] Press Enter to continue...{Style.RESET_ALL}")
+
+def run():
+    """Application entry point"""
     try:
         while True:
             main()
@@ -161,5 +208,9 @@ if __name__ == "__main__":
         print(f"\n{Fore.RED}[!] Interrupted by user. Exiting...{Style.RESET_ALL}")
         sys.exit(0)
     except Exception as e:
-        print(f"{Fore.RED}[!] Error: {str(e)}{Style.RESET_ALL}")
+        print(f"{Fore.RED}[!] Fatal Error: {str(e)}{Style.RESET_ALL}")
+        print(f"{Fore.YELLOW}[*] Stack trace: {traceback.format_exc()}{Style.RESET_ALL}")
         sys.exit(1)
+
+if __name__ == "__main__":
+    run()
